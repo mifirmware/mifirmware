@@ -5,7 +5,15 @@
 Mi Firmware Maker can create easily xiaomi flashable firmware zip with a command.
 
 ```
-python maker.py [device.json] [version]
+python maker.py [DEVICE CODENAME] [MIUI VERSION]
 ```
+Run this command and
 
-versions: global-stable, global-dev, china-stable, china-dev
+### Available Miui Version;
+
+```
+global-stable
+global-dev
+china-stable
+china-dev
+```

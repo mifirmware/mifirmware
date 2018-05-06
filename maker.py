@@ -20,8 +20,12 @@ parser.add_argument("--skip-miui-release-check", help="skip miui release check",
 parser.parse_args()
 args = parser.parse_args()
 
-with open(args.device, 'r') as device_data_file:
-    ddata = json.load(device_data_file)
+if os.path.isfile(args.device):
+    with open(args.device, 'r') as device_data_file:
+        ddata = json.load(device_data_file)
+else:
+    r_json = requests.get("https://raw.githubusercontent.com/mifirmware/devices/master/%s.json" % args.device)
+    ddata = json.loads(r_json.text)
 
 print("Current device: %s, %s" % (ddata['codename'], ddata['name']))
 
