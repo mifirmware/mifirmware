@@ -40,14 +40,12 @@ print("Found download url: " + zip_url)
 
 cachedb = sqlite3.connect('cache.db')
 cursor = cachedb.cursor()
-cursor.execute("CREATE TABLE IF NOT EXISTS " + ddata['codename'] + " (version TEXT, last_miui_release REAL)")
-cursor.execute("INSERT INTO " + ddata['codename'] + "(version, last_miui_release) SELECT '" + args.version + "', '0.0.0' WHERE NOT EXISTS(SELECT * FROM " + ddata['codename'] + " WHERE version='" + args.version + "');")
+cursor.execute("CREATE TABLE IF NOT EXISTS devices (codename TEXT, version TEXT, last_miui_release REAL)")
+cursor.execute("INSERT INTO devices(codename, version, last_miui_release) SELECT ?, ?, '0.0.0' WHERE NOT EXISTS(SELECT * FROM devices WHERE codename=? and version=?);", [ddata['codename'], args.version, ddata['codename'], args.version])
 cachedb.commit()
 
-cursor.execute("SELECT * FROM " + ddata['codename'] + " WHERE version=?", [args.version])
-last_miui_release = cursor.fetchone()[1]
-
-sys.exit(0)
+cursor.execute("SELECT * FROM devices WHERE codename=? and version=?", [ddata['codename'], args.version])
+last_miui_release = cursor.fetchone()[2]
 
 if miui_release <= last_miui_release:
     print("Not found new miui build. Terminating..")
@@ -68,6 +66,6 @@ subprocess.check_call("xiaomi-flashable-firmware-creator/create_flashable_firmwa
 os.remove(zip_location)
 
 print("Created " + ddata['codename'] + " flashable firmware.")
-cursor.execute("UPDATE " + ddata['codename'] + " SET last_miui_release='" + miui_release + "' WHERE version='" + args.version + "'")
+cursor.execute("UPDATE devices SET last_miui_release=? WHERE codename=? and version=?", [miui_release, ddata['codename'], args.version])
 cachedb.commit()
 cachedb.close()
