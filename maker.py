@@ -16,6 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("device", help="import device json file")
 parser.add_argument("version", help="choose miui version for generate firmware zip")
 parser.add_argument("--output", help="output location")
+parser.add_argument("--skip-miui-release-check", help="skip miui release check", action="store_true")
 parser.parse_args()
 args = parser.parse_args()
 
@@ -48,14 +49,15 @@ cursor.execute("CREATE TABLE IF NOT EXISTS devices (codename TEXT, version TEXT,
 cursor.execute("INSERT INTO devices(codename, version, last_miui_release) SELECT ?, ?, '0.0.0' WHERE NOT EXISTS(SELECT * FROM devices WHERE codename=? and version=?);", [ddata['codename'], args.version, ddata['codename'], args.version])
 cachedb.commit()
 
-cursor.execute("SELECT * FROM devices WHERE codename=? and version=?", [ddata['codename'], args.version])
-last_miui_release = cursor.fetchone()[2]
-
-if miui_release <= last_miui_release:
-    print("Not found new miui build. Terminating..")
-    sys.exit(0)
-
-print("Found new miui build: %s > %s" % (miui_release, last_miui_release))
+if not args.skip_miui_release_check:
+    cursor.execute("SELECT * FROM devices WHERE codename=? and version=?", [ddata['codename'], args.version])
+    last_miui_release = cursor.fetchone()[2]
+    
+    if miui_release <= last_miui_release:
+        print("Not found new miui build. Terminating..")
+        sys.exit(0)
+    
+    print("Found new miui build: %s > %s" % (miui_release, last_miui_release))
 
 if not os.path.exists(miui_release):
     os.makedirs(miui_release)
@@ -71,6 +73,9 @@ subprocess.check_call("xiaomi-flashable-firmware-creator/create_flashable_firmwa
 os.remove(zip_location)
 
 print("Created %s flashable firmware." % ddata['codename'])
-cursor.execute("UPDATE devices SET last_miui_release=? WHERE codename=? and version=?", [miui_release, ddata['codename'], args.version])
-cachedb.commit()
+
+if not args.skip_miui_release_check:
+    cursor.execute("UPDATE devices SET last_miui_release=? WHERE codename=? and version=?", [miui_release, ddata['codename'], args.version])
+    cachedb.commit()
+
 cachedb.close()
