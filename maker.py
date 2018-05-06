@@ -22,7 +22,7 @@ args = parser.parse_args()
 with open(args.device, 'r') as device_data_file:
     ddata = json.load(device_data_file)
 
-print("Current device: " + ddata['codename'] + ", " + ddata['name'])
+print("Current device: %s, %s" % (ddata['codename'], ddata['name']))
 
 page = requests.get("http://en.miui.com/download-" + ddata['id'] + ".html").text
 soup = BeautifulSoup(page, 'html.parser')
@@ -36,7 +36,11 @@ for line in soup.find(id=ddata['content_id'][args.version.split('-')[0]]).find_a
     elif "stable" in args.version:
         break
 
-print("Found download url: " + zip_url)
+if not 'zip_url' in globals():
+    print("Not found any url")
+    sys.exit(1)
+
+print("Found download url: %s" % zip_url)
 
 cachedb = sqlite3.connect('cache.db')
 cursor = cachedb.cursor()
@@ -51,7 +55,7 @@ if miui_release <= last_miui_release:
     print("Not found new miui build. Terminating..")
     sys.exit(0)
 
-print("Found new miui build: " + miui_release + " > " + last_miui_release)
+print("Found new miui build: %s > %s" % (miui_release, last_miui_release))
 
 if not os.path.exists(miui_release):
     os.makedirs(miui_release)
@@ -59,13 +63,14 @@ if not os.path.exists(miui_release):
 zip_location = miui_release + "/" + zip_url_split[1]
 
 if not os.path.isfile(zip_location):
+    print("Downloading: %s" % zip_url_split[1])
     with urllib.request.urlopen(zip_url) as response, open(zip_location, 'wb') as outf:
         shutil.copyfileobj(response, outf)
 
 subprocess.check_call("xiaomi-flashable-firmware-creator/create_flashable_firmware.sh %s %s" % (zip_location, miui_release + "/"), shell=True)
 os.remove(zip_location)
 
-print("Created " + ddata['codename'] + " flashable firmware.")
+print("Created %s flashable firmware." % ddata['codename'])
 cursor.execute("UPDATE devices SET last_miui_release=? WHERE codename=? and version=?", [miui_release, ddata['codename'], args.version])
 cachedb.commit()
 cachedb.close()
