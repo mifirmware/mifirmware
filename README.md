@@ -14,6 +14,14 @@ Then you can run it.
 python maker.py [DEVICE CODENAME] [MIUI VERSION]
 ```
 
+Example, you can create flashable firmware zip for capricorn from miui global dev version.
+
+```
+python maker.py capricorn global-dev
+```
+
+Also, you can use `python maker.py -h` to show arguments.
+
 ### Available Devices;
 
 You can see from [this repo.](https://github.com/mifirmware/devices)
