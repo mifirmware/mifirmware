@@ -17,12 +17,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument("device", help="import device json file")
 parser.add_argument("version", help="choose miui version for generate firmware zip")
 parser.add_argument("--output", help="output location")
+parser.add_argument("--git", help="import device json file from github", action="store_true")
 parser.add_argument("--skip-miui-release-check", help="skip miui release check", action="store_true")
 parser.parse_args()
 args = parser.parse_args()
 
 # If exists local device.json file, use it. Or fetch from GitHub.
-if os.path.isfile(args.device):
+if not args.git:
     with open(args.device, 'r') as device_data_file:
         ddata = json.load(device_data_file)
 else:
