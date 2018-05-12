@@ -2,22 +2,34 @@
 
 Mi Firmware, purposes can create easily flashable xiaomi firmware.
 
-## Getting Started
+## Usage
 
 * You should use latest Python 3 release.
 
 First, you have to clone [this repo](https://github.com/ardadem/xiaomi-flashable-firmware-creator) in same folder with maker.
 
+Second, you need some dependencies. You can install these via pip.
+
+```
+pip install -r requirements.txt
+```
+
 Then you can run it.
 
 ```
-python maker.py [DEVICE CODENAME] [MIUI VERSION]
+python maker.py --git [DEVICE CODENAME] [MIUI VERSION]
+```
+
+or
+
+```
+python maker.py [DEVICE JSON FILE] [MIUI VERSION]
 ```
 
 Example, you can create flashable firmware zip for capricorn from miui global dev version.
 
 ```
-python maker.py capricorn global-dev
+python maker.py --git capricorn global-dev
 ```
 
 Also, you can use `python maker.py -h` to show arguments.
