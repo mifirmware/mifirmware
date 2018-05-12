@@ -6,9 +6,9 @@ Mi Firmware, purposes can create easily flashable xiaomi firmware.
 
 * You should use latest Python 3 release.
 
-First, you have to clone [this repo](https://github.com/ardadem/xiaomi-flashable-firmware-creator) in same folder with maker.
+First, you have to clone [this repo](https://github.com/ardadem/xiaomi-flashable-firmware-creator) in the same folder with maker.
 
-Second, you need some dependencies. You can install these via pip.
+Second, you need to some dependencies. You can install these via pip.
 
 ```
 pip install -r requirements.txt
