@@ -86,8 +86,10 @@ if not os.path.isfile(zip_location):
     with urllib.request.urlopen(zip_url) as response, open(zip_location, 'wb') as outf:
         shutil.copyfileobj(response, outf)
 
+out = (miui_release + "/") if not args.output else args.output
+
 # Create firmware zip
-subprocess.check_call("xiaomi-flashable-firmware-creator/create_flashable_firmware.sh %s %s" % (zip_location, miui_release + "/"), shell=True)
+subprocess.check_call("xiaomi-flashable-firmware-creator/create_flashable_firmware.sh %s %s" % (zip_location, out), shell=True)
 os.remove(zip_location)
 
 print("Created %s flashable firmware." % ddata['codename'])
