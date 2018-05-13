@@ -19,7 +19,6 @@ parser.add_argument("version", help="choose miui version for generate firmware z
 parser.add_argument("--output", help="output location")
 parser.add_argument("--git", help="import device json file from github", action="store_true")
 parser.add_argument("--skip-miui-release-check", help="skip miui release check", action="store_true")
-parser.parse_args()
 args = parser.parse_args()
 
 # If exists local device.json file, use it. Or fetch from GitHub.
