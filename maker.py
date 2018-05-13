@@ -21,13 +21,18 @@ parser.add_argument("--git", help="import device json file from github", action=
 parser.add_argument("--skip-miui-release-check", help="skip miui release check", action="store_true")
 args = parser.parse_args()
 
+# Check miui version is available
+versions = ["global-stable", "global-dev", "china-stable", "china-dev"]
+if not args.version in versions:
+    print("Please write any available miui version.")
+    sys.exit(1)
+
 # If exists local device.json file, use it. Or fetch from GitHub.
 if not args.git:
     with open(args.device, 'r') as device_data_file:
         ddata = json.load(device_data_file)
 else:
-    r_json = requests.get("https://raw.githubusercontent.com/mifirmware/devices/master/%s.json" % args.device)
-    ddata = json.loads(r_json.text)
+    ddata = json.loads(requests.get("https://raw.githubusercontent.com/mifirmware/devices/master/%s.json" % args.device).text)
 
 print("Current device/version: %s, %s / %s" % (ddata['codename'], ddata['name'], args.version))
 
