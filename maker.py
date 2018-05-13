@@ -6,6 +6,7 @@ import shutil
 import sqlite3
 import hashlib # for the future
 import argparse
+import zipfile
 import requests
 import subprocess
 import urllib.request
@@ -89,6 +90,14 @@ if not os.path.isfile(zip_location):
     print("Downloading: %s" % zip_url_split[1])
     with urllib.request.urlopen(zip_url) as response, open(zip_location, 'wb') as outf:
         shutil.copyfileobj(response, outf)
+
+# Test miui zip
+with zipfile.ZipFile(zip_location) as zip_file:
+    zip_stat = zip_file.testzip()
+
+if zip_stat is not None:
+    print("Zip file is bad: %s" % zip_stat)
+    sys.exit(1)
 
 out = (miui_release + "/") if not args.output else args.output
 
