@@ -30,7 +30,7 @@ else:
     r_json = requests.get("https://raw.githubusercontent.com/mifirmware/devices/master/%s.json" % args.device)
     ddata = json.loads(r_json.text)
 
-print("Current device: %s, %s" % (ddata['codename'], ddata['name']))
+print("Current device/version: %s, %s / %s" % (ddata['codename'], ddata['name'], args.version))
 
 # Parse miui download page
 page = requests.get("http://en.miui.com/download-" + ddata['id'] + ".html").text
