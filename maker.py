@@ -35,7 +35,7 @@ if not args.git:
 else:
     ddata = json.loads(requests.get("https://raw.githubusercontent.com/mifirmware/devices/master/%s.json" % args.device).text)
 
-print("Current device/version: %s, %s / %s" % (ddata['codename'], ddata['name'], args.version))
+print("Current device: %s (%s) | %s" % (ddata['name'], ddata['codename'], args.version))
 
 # Parse miui download page
 page = requests.get("http://en.miui.com/download-" + ddata['id'] + ".html").text
@@ -56,10 +56,10 @@ for line in soup.find(id=ddata['content_id'][args.version.split('-')[0]]).find_a
 
 # If not defined zip url, terminate
 if not 'zip_url' in globals():
-    print("Not found any url")
+    print("")
     sys.exit(1)
 
-print("Found download url: %s" % zip_url)
+print("Here, miui zip url: %s" % zip_url)
 
 # Create (if not exists) device db & table for caching last release
 cachedb = sqlite3.connect('cache.db')
@@ -74,10 +74,11 @@ if not args.skip_miui_release_check:
     last_miui_release = cursor.fetchone()[2]
     
     if miui_release <= last_miui_release:
-        print("Not found new miui build. Terminating..")
+        print("Nope, not have any new release. Try later again or skip miui release check.")
+        print("Process terminating..")
         sys.exit(0)
     
-    print("Found new miui build: %s > %s" % (miui_release, last_miui_release))
+    print("New miui release!: %s > %s" % (miui_release, last_miui_release))
 
 # If not exists folder, create it
 if not os.path.exists(miui_release):
@@ -96,7 +97,7 @@ with zipfile.ZipFile(zip_location) as zip_file:
     zip_stat = zip_file.testzip()
 
 if zip_stat is not None:
-    print("Zip file is bad: %s" % zip_stat)
+    print("Bad zip file: %s" % zip_stat)
     sys.exit(1)
 
 out = (miui_release + "/") if not args.output else args.output
@@ -115,7 +116,7 @@ with open(out, 'rb') as outfile:
 hash_sha256.hexdigest()
 hash_md5.hexdigest()
 
-print("Created %s flashable firmware." % ddata['codename'])
+print("Created flashable firmware for %s." % ddata['codename'])
 print("SHA256: %s" % hash_sha256)
 print("MD5: %s" % hash_md5)
 
