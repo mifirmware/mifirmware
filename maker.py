@@ -4,9 +4,9 @@ import sys
 import json
 import shutil
 import sqlite3
-import hashlib # for the future
-import argparse
+import hashlib
 import zipfile
+import argparse
 import requests
 import subprocess
 import urllib.request
@@ -105,7 +105,19 @@ out = (miui_release + "/") if not args.output else args.output
 subprocess.check_call("xiaomi-flashable-firmware-creator/create_flashable_firmware.sh %s %s" % (zip_location, out), shell=True)
 os.remove(zip_location)
 
+# Generate checksum
+hash_sha256 = hashlib.sha256()
+hash_md5 = hashlib.md5()
+with open(out, 'rb') as outfile:
+    for chunk in iter(lambda: f.read(4096), b''):
+        hash_sha256.update(chunk)
+        hash_md5.update(chunk)
+hash_sha256.hexdigest()
+hash_md5.hexdigest()
+
 print("Created %s flashable firmware." % ddata['codename'])
+print("SHA256: %s" % hash_sha256)
+print("MD5: %s" % hash_md5)
 
 # If not defined skip miui release argument, commit last miui version
 if not args.skip_miui_release_check:
