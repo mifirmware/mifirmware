@@ -56,7 +56,8 @@ for line in soup.find(id=ddata['content_id'][args.version.split('-')[0]]).find_a
 
 # If not defined zip url, terminate
 if not 'zip_url' in globals():
-    print("")
+    print("Not found any URL")
+    print("Process terminating..")
     sys.exit(1)
 
 print("Here, miui zip url: %s" % zip_url)
@@ -74,7 +75,7 @@ if not args.skip_miui_release_check:
     last_miui_release = cursor.fetchone()[2]
     
     if miui_release <= last_miui_release:
-        print("Nope, not have any new release. Try later again or skip miui release check.")
+        print("Nope, not have any new release. Try again later or skip miui release check.")
         print("Process terminating..")
         sys.exit(0)
     
