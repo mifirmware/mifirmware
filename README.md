@@ -14,26 +14,26 @@ You can create flashable firmware for xiaomi devices with just a command.
 pip install -r requirements.txt
 ```
 
-Everything is ready! You can look at the usage below and make a flashable firmware :)
+Everything's ready! You can read usage and then make a flashable firmware :)
 
 ## Usage
 
 If you want to make flashable firmware just for a specific device, you can just use this command
 
 ```
-python maker.py --git [DEVICE CODENAME] [MIUI VERSION]
+python maker.py [DEVICE CODENAME] [MIUI VERSION]
 ```
 
 or
 
 ```
-python maker.py [DEVICE JSON FILE] [MIUI VERSION]
+python maker.py --file [DEVICE JSON FILE] [MIUI VERSION]
 ```
 
 For example, you can create flashable firmware zip for capricorn from miui global dev version.
 
 ```
-python maker.py --git capricorn global-dev
+python maker.py capricorn global-dev
 ```
 
 Also, you can use `python maker.py -h` to show arguments.

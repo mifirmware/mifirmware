@@ -15,21 +15,29 @@ from urllib.parse import urlparse
 
 # Argument parser stuff
 parser = argparse.ArgumentParser()
-parser.add_argument("device", help="import device json file")
+parser.add_argument("device", help="import device scheme from github repo via codename")
 parser.add_argument("version", help="choose miui version for generate firmware zip")
-parser.add_argument("--output", help="output location")
-parser.add_argument("--git", help="import device json file from github", action="store_true")
+parser.add_argument("--output", help="set output location")
+parser.add_argument("--file", help="import device scheme from storage", action="store_true")
 parser.add_argument("--skip-miui-release-check", help="skip miui release check", action="store_true")
 args = parser.parse_args()
 
 # Check miui version is available
 versions = ["global-stable", "global-dev", "china-stable", "china-dev"]
 if not args.version in versions:
-    print("Please write any available miui version.")
+    print("Please input an available miui version.")
+    sys.stdout.write("=> ")
+    curr = 0
+    for ver in versions:
+        curr+=1
+        if curr < len(versions):
+            sys.stdout.write(ver + ", ")
+        else:
+            print(ver)
     sys.exit(1)
 
 # If exists local device.json file, use it. Or fetch from GitHub.
-if not args.git:
+if args.file:
     with open(args.device, 'r') as device_data_file:
         ddata = json.load(device_data_file)
 else:
@@ -56,11 +64,11 @@ for line in soup.find(id=ddata['content_id'][args.version.split('-')[0]]).find_a
 
 # If not defined zip url, terminate
 if not 'zip_url' in globals():
-    print("Not found any URL")
-    print("Process terminating..")
+    print("Not found any URL address")
+    print("Process is terminating now..")
     sys.exit(1)
 
-print("Here, miui zip url: %s" % zip_url)
+print("Here is, miui zip url: %s" % zip_url)
 
 # Create (if not exists) device db & table for caching last release
 cachedb = sqlite3.connect('cache.db')
@@ -76,10 +84,10 @@ if not args.skip_miui_release_check:
     
     if miui_release <= last_miui_release:
         print("Nope, not have any new release. Try again later or skip miui release check.")
-        print("Process terminating..")
+        print("Process is terminating..")
         sys.exit(0)
     
-    print("New miui release!: %s > %s" % (miui_release, last_miui_release))
+    print("Found a new miui release!: %s > %s" % (miui_release, last_miui_release))
 
 # If not exists folder, create it
 if not os.path.exists(miui_release):
@@ -98,7 +106,7 @@ with zipfile.ZipFile(zip_location) as zip_file:
     zip_stat = zip_file.testzip()
 
 if zip_stat is not None:
-    print("Bad zip file: %s" % zip_stat)
+    print("Zip file is broken: %s" % zip_stat)
     sys.exit(1)
 
 out = (miui_release + "/") if not args.output else args.output
